@@ -1,0 +1,27 @@
+#paris-map .leaflet-bottom.leaflet-left {
+  bottom: max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
+  left: max(1rem, env(safe-area-inset-left, 0px));
+}
+
+#paris-map .leaflet-control-zoom {
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+}
+
+#paris-map .leaflet-control-zoom a {
+  border: 0;
+  color: #1e293b;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+#paris-map .leaflet-control-zoom a:hover,
+#paris-map .leaflet-control-zoom a:active {
+  color: #e11d48;
+  background-color: #f1f5f9;
+}
+

@@ -1,0 +1,174 @@
+<section class="fixed inset-0 z-[1300] flex items-end sm:items-center justify-center bg-slate-950/60 p-0 sm:p-4 backdrop-blur-sm">
+  <form (ngSubmit)="submit()" novalidate class="max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-t-[2.25rem] sm:rounded-3xl border border-white/60 bg-white p-6 pb-[max(2rem,env(safe-area-inset-bottom,0px))] shadow-2xl no-scrollbar flex flex-col">
+    
+    <!-- Poignée mobile pour fermer le formulaire -->
+    <div class="mx-auto mb-2 h-1.5 w-12 rounded-full bg-slate-200 sm:hidden"></div>
+
+    <!-- En-tête -->
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-rose-600">Anti-Gravity</p>
+        <h2 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">{{ souvenir() ? 'Modifier le souvenir' : 'Nouveau souvenir' }}</h2>
+      </div>
+      <button type="button" [disabled]="isSaving()" (click)="cancel.emit()" class="grid size-9 place-items-center rounded-xl bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900 active:scale-95 disabled:opacity-50" aria-label="Fermer">
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Titre -->
+    <label class="mt-6 block text-sm font-semibold text-slate-700">
+      Titre du souvenir <span class="text-rose-500">*</span>
+      <input [(ngModel)]="model.title" name="title" placeholder="Ex: Coucher de soleil à Montmartre" class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-800 outline-none transition-all placeholder:text-slate-400 focus:border-rose-500 focus:bg-white focus:ring-4 focus:ring-rose-100" />
+    </label>
+
+    <!-- Description -->
+    <label class="mt-4 block text-sm font-semibold text-slate-700">
+      Description
+      <textarea [(ngModel)]="model.description" name="description" rows="3" placeholder="Racontez ce moment..." class="mt-1.5 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-800 outline-none transition-all placeholder:text-slate-400 focus:border-rose-500 focus:bg-white focus:ring-4 focus:ring-rose-100"></textarea>
+    </label>
+
+    <!-- Coordonnées GPS -->
+    <div class="mt-4 grid grid-cols-2 gap-3">
+      <label class="text-sm font-semibold text-slate-700">
+        Latitude
+        <input [(ngModel)]="lat" name="lat" type="number" step="any" class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-3.5 py-3 text-slate-800 outline-none transition-all focus:border-rose-500 focus:bg-white focus:ring-4 focus:ring-rose-100" />
+      </label>
+      <label class="text-sm font-semibold text-slate-700">
+        Longitude
+        <input [(ngModel)]="lng" name="lng" type="number" step="any" class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-3.5 py-3 text-slate-800 outline-none transition-all focus:border-rose-500 focus:bg-white focus:ring-4 focus:ring-rose-100" />
+      </label>
+    </div>
+
+    <!-- Bouton choix sur carte -->
+    <button type="button" [disabled]="isSaving()" (click)="chooseLocation()" class="mt-3 flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 active:scale-98 disabled:opacity-50">
+      <svg class="size-4 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="8"/><path d="m12 8 2.5 4.5L12 15l-2.5-2.5z"/></svg>
+      <span>Choisir l'emplacement sur la carte</span>
+    </button>
+
+    <!-- Boutons d'ajout de médias (Photos / Vidéos) -->
+    <div class="mt-5 grid grid-cols-2 gap-3">
+      <label class="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/60 p-4 text-center transition-all hover:border-rose-300 hover:bg-rose-50/50 active:scale-98" [class.pointer-events-none]="isSaving()">
+        <span class="grid size-11 place-items-center rounded-xl bg-white text-rose-600 shadow-sm transition-transform group-hover:scale-110">
+          <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+        </span>
+        <span class="mt-2.5 text-xs font-bold text-slate-800">Ajouter des photos</span>
+        <span class="mt-0.5 text-[10px] text-slate-500">Multiples autorisées</span>
+        <input (change)="selectImage($event)" [disabled]="isSaving()" accept="image/*" type="file" multiple class="sr-only" />
+      </label>
+
+      <label class="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/60 p-4 text-center transition-all hover:border-rose-300 hover:bg-rose-50/50 active:scale-98" [class.pointer-events-none]="isSaving()">
+        <span class="grid size-11 place-items-center rounded-xl bg-white text-rose-600 shadow-sm transition-transform group-hover:scale-110">
+          <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m10 8 6 4-6 4V8z"/></svg>
+        </span>
+        <span class="mt-2.5 text-xs font-bold text-slate-800">Ajouter des vidéos</span>
+        <span class="mt-0.5 text-[10px] text-slate-500">Multiples autorisées</span>
+        <input (change)="selectVideo($event)" [disabled]="isSaving()" accept="video/*" type="file" multiple class="sr-only" />
+      </label>
+    </div>
+
+    <!-- Grille de prévisualisation des vignettes sélectionnées -->
+    @if (previews().length > 0) {
+      <div class="mt-4 rounded-2xl border border-slate-200/80 bg-slate-50/90 p-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="size-2 rounded-full bg-rose-500 ring-4 ring-rose-500/20"></span>
+            <span class="text-xs font-bold text-slate-800">Album sélectionné : {{ previews().length }} média(s)</span>
+          </div>
+          <span class="text-[10px] font-medium text-slate-500">Touchez × pour retirer</span>
+        </div>
+
+        <div class="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+          @for (item of previews(); track item.previewUrl; let i = $index) {
+            <div class="group relative aspect-square overflow-hidden rounded-xl bg-slate-900 border border-slate-200/80 shadow-sm">
+              @if (item.type === 'video') {
+                <video [src]="item.previewUrl" class="size-full object-cover"></video>
+                <div class="absolute inset-0 grid place-items-center bg-black/30 pointer-events-none">
+                  <span class="grid size-6 place-items-center rounded-full bg-white/80 text-[10px] text-slate-900">▶</span>
+                </div>
+                <span class="absolute bottom-1 left-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm">VID</span>
+              } @else {
+                <img [src]="item.previewUrl" [alt]="item.name" class="size-full object-cover" />
+                <span class="absolute bottom-1 left-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm">IMG</span>
+              }
+
+              <!-- Bouton de suppression individuelle de la vignette -->
+              @if (!isSaving()) {
+                <button type="button" 
+                        (click)="removeFile(i)" 
+                        class="absolute top-1 right-1 grid size-6 place-items-center rounded-full bg-slate-950/80 text-white text-xs hover:bg-rose-600 transition-colors shadow-md active:scale-90" 
+                        aria-label="Supprimer ce média">
+                  ×
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Médias existants si modification -->
+    @if (model.media && model.media.length > 0) {
+      <div class="mt-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 p-3.5">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-bold text-slate-700">Médias déjà enregistrés ({{ model.media.length }})</p>
+          <span class="text-[10px] text-slate-400">Touchez × pour retirer</span>
+        </div>
+        <div class="mt-2.5 flex gap-2.5 overflow-x-auto pb-1 no-scrollbar">
+          @for (m of model.media; track m.path; let i = $index) {
+            <div class="group relative size-16 shrink-0 overflow-hidden rounded-xl bg-slate-900 border border-slate-200 shadow-sm">
+              @if (m.type === 'video') {
+                <video [src]="m.url" class="size-full object-cover"></video>
+                <span class="absolute bottom-1 left-1 rounded bg-black/60 px-1 py-0.5 text-[8px] font-bold text-white">VID</span>
+              } @else {
+                <img [src]="m.url" [alt]="model.title || ''" class="size-full object-cover" />
+                <span class="absolute bottom-1 left-1 rounded bg-black/60 px-1 py-0.5 text-[8px] font-bold text-white">IMG</span>
+              }
+
+              @if (!isSaving()) {
+                <button type="button" 
+                        (click)="removeExistingMedia(i)" 
+                        class="absolute top-1 right-1 grid size-5 place-items-center rounded-full bg-slate-950/80 text-white text-[11px] hover:bg-rose-600 transition-colors shadow-md active:scale-90" 
+                        aria-label="Retirer ce média">
+                  ×
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Date -->
+    <label class="mt-4 block text-sm font-semibold text-slate-700">
+      Date
+      <input [(ngModel)]="model.date" name="date" type="date" class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-800 outline-none transition-all focus:border-rose-500 focus:bg-white focus:ring-4 focus:ring-rose-100" />
+    </label>
+
+    <!-- Affichage d'erreur explicite -->
+    @if (error() || externalError()) { 
+      <div class="mt-4 flex items-center gap-2 rounded-2xl bg-rose-50 p-3.5 text-sm font-medium text-rose-700 border border-rose-200">
+        <svg class="size-4 shrink-0 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+        <span>{{ error() || externalError() }}</span>
+      </div> 
+    }
+
+    <!-- Boutons d'action -->
+    <div class="mt-7 flex justify-end gap-3 border-t border-slate-100 pt-5">
+      <button type="button" [disabled]="isSaving()" (click)="cancel.emit()" class="rounded-2xl px-5 py-3 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 active:scale-95 disabled:opacity-50">
+        Annuler
+      </button>
+      <button type="submit" 
+              [disabled]="isSaving()"
+              class="flex-1 sm:flex-none rounded-2xl bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-slate-900/15 transition-all hover:bg-slate-800 active:scale-95 disabled:cursor-wait disabled:opacity-80">
+        @if (isSaving()) {
+          <span class="inline-flex items-center justify-center gap-2.5">
+            <svg class="size-4 animate-spin text-rose-400" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span>{{ saveProgress() || 'Enregistrement…' }}</span>
+          </span>
+        } @else {
+          <span>{{ souvenir() ? 'Mettre à jour' : 'Enregistrer le souvenir' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</section>

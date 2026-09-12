@@ -1,0 +1,20 @@
+/* Performance et défilement fluide */
+:host {
+  display: contents;
+}
+
+aside {
+  will-change: transform;
+  touch-action: pan-y;
+}
+
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-none,
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
