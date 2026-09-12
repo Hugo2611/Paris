@@ -1,0 +1,404 @@
+<!-- Canvas Confettis plein écran au-dessus de tout -->
+<canvas #confettiCanvas class="pointer-events-none fixed inset-0 z-[2100]"></canvas>
+
+@if (activeEgg() !== null) {
+<!-- Arrière-plan flouté semi-transparent -->
+<div
+  class="fixed inset-0 z-[2000] flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-md overflow-y-auto"
+  (click)="closeModal()">
+
+  <!-- ============================================================ -->
+  <!-- 1. MODAL EASTER EGG : LES EMPANADAS 🥟                         -->
+  <!-- ============================================================ -->
+  @if (activeEgg() === 'empanadas') {
+  <div
+    class="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] border border-amber-200/80 bg-gradient-to-b from-amber-50/95 via-white to-amber-50/90 p-6 sm:p-8 shadow-2xl shadow-amber-950/20 backdrop-blur-2xl transition-all"
+    (click)="$event.stopPropagation()">
+
+    <!-- Bouton fermer -->
+    <button type="button" (click)="closeModal()"
+      class="absolute right-5 top-5 grid size-10 place-items-center rounded-full bg-amber-100/80 text-amber-900 transition-transform active:scale-90 hover:bg-amber-200"
+      aria-label="Fermer">
+      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M18 6L6 18M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Badge secret -->
+    <div
+      class="inline-flex items-center gap-2 rounded-full bg-amber-500/15 px-3.5 py-1.5 text-xs font-black uppercase tracking-wider text-amber-800 border border-amber-300/60">
+      <span class="size-2 rounded-full bg-amber-500 animate-ping"></span>
+      <span>Message Secret Débloqué ✨</span>
+    </div>
+
+    <!-- Illustration Empanada avec vapeur animée -->
+    <div class="relative my-6 flex items-center justify-center">
+      <!-- Vapeur stylisée -->
+      <div class="absolute -top-6 flex gap-3 text-amber-400">
+        <span class="animate-steam-1 text-lg">♨️</span>
+        <span class="animate-steam-2 text-2xl">♨️</span>
+        <span class="animate-steam-3 text-lg">♨️</span>
+      </div>
+
+      <!-- L'empanada dorée animée -->
+      <div
+        class="animate-empanada grid size-28 place-items-center rounded-full bg-gradient-to-tr from-amber-400 via-amber-300 to-yellow-200 shadow-xl shadow-amber-500/30 ring-8 ring-amber-100/80">
+        <span class="text-6xl drop-shadow-md select-none">🥟</span>
+      </div>
+    </div>
+
+    <!-- Titre & Message -->
+    <div class="text-center">
+      <h2 class="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+        Psst Marie... 🥟
+      </h2>
+
+      <!-- Carte de la citation / proposition -->
+      <div class="mt-4 rounded-3xl border border-amber-200/90 bg-white/90 p-5 shadow-sm">
+        <p class="text-lg sm:text-xl font-bold text-amber-950 leading-snug">
+          « Si un jour tu veux, je te propose qu'on aille manger des empanadas ! »
+        </p>
+        <p class="mt-2.5 text-xs font-medium text-slate-500">
+          (Option salsa piquante ou douce au choix, et promis tu pourras goûter à tous les parfums 😋)
+        </p>
+      </div>
+    </div>
+
+    <!-- Boutons de réponse interactive -->
+    <div class="mt-6 space-y-2.5">
+      <p class="text-center text-xs font-bold uppercase tracking-wider text-slate-400">
+        Votre réponse officielle :
+      </p>
+
+      <button type="button" (click)="setEmpanadaAnswer('yes')"
+        class="flex w-full items-center justify-between rounded-2xl border border-amber-300 bg-amber-500 px-5 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/25 transition-all hover:bg-amber-400 active:scale-95"
+        [class.ring-4]="empanadaAnswer() === 'yes'" [class.ring-amber-300]="empanadaAnswer() === 'yes'">
+        <span>Carrément partante ! 🥟</span>
+        <span class="text-lg">💃</span>
+      </button>
+
+      <button type="button" (click)="setEmpanadaAnswer('treat')"
+        class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 shadow-sm transition-all hover:bg-slate-50 active:scale-95"
+        [class.ring-4]="empanadaAnswer() === 'treat'" [class.ring-rose-200]="empanadaAnswer() === 'treat'">
+        <span>Seulement si c'est toi qui régales 😜</span>
+        <span class="text-lg">💳</span>
+      </button>
+
+      <button type="button" (click)="setEmpanadaAnswer('maybe')"
+        class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white/80 px-5 py-3 text-sm font-semibold text-slate-600 shadow-sm transition-all hover:bg-slate-50 active:scale-95"
+        [class.ring-4]="empanadaAnswer() === 'maybe'" [class.ring-slate-300]="empanadaAnswer() === 'maybe'">
+        <span>Laisse-moi réfléchir... 🤔</span>
+        <span class="text-lg">⏳</span>
+      </button>
+    </div>
+
+    <!-- Feedback humoristique selon le choix -->
+    @if (empanadaAnswer(); as ans) {
+    <div class="mt-5 animate-fade-in rounded-2xl p-4 text-center text-sm font-bold"
+      [class.bg-emerald-50]="ans === 'yes'" [class.text-emerald-800]="ans === 'yes'" [class.border]="ans === 'yes'"
+      [class.border-emerald-200]="ans === 'yes'" [class.bg-rose-50]="ans === 'treat'"
+      [class.text-rose-800]="ans === 'treat'" [class.border-rose-200]="ans === 'treat'"
+      [class.bg-slate-100]="ans === 'maybe'" [class.text-slate-800]="ans === 'maybe'">
+      @if (ans === 'yes') {
+      🎉 C'est noté et archivé ! Prépare tes papilles, le rendez-vous est pris ! ✨
+      } @else if (ans === 'treat') {
+      😉 Évidemment 100% offert par la maison ! Aucun compromis sur les empanadas.
+      } @else {
+      ⌛ Prends ton temps... mais attention, les empanadas refroidissent vite ! 🥟
+      }
+    </div>
+    }
+  </div>
+  }
+
+  <!-- ============================================================ -->
+  <!-- 2. MODAL EASTER EGG : LE T-SHIRT « I LOVE GRÉZIEU-LA-VARENNE » 👕 -->
+  <!-- ============================================================ -->
+  @if (activeEgg() === 'grizou') {
+  <div
+    class="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] border border-rose-200/80 bg-gradient-to-b from-slate-900 via-slate-950 to-rose-950 p-6 sm:p-8 text-white shadow-2xl shadow-rose-950/50 backdrop-blur-2xl transition-all"
+    (click)="$event.stopPropagation()">
+
+    <!-- Bouton fermer -->
+    <button type="button" (click)="closeModal()"
+      class="absolute right-5 top-5 z-20 grid size-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition-transform active:scale-90 hover:bg-white/20"
+      aria-label="Fermer">
+      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M18 6L6 18M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- En-tête avec badge collector -->
+    <div class="flex items-center gap-2">
+      <span
+        class="inline-flex items-center gap-1.5 rounded-full bg-rose-500/20 px-3.5 py-1 text-[11px] font-black uppercase tracking-wider text-rose-300 border border-rose-400/30">
+        <span>👕</span> ÉDITION COLLECTOR • SAISON 2026
+      </span>
+    </div>
+
+    <div class="mt-3 text-left">
+      <h2 class="text-2xl font-black tracking-tight text-white sm:text-3xl">
+        T-Shirt Officiel 👕
+      </h2>
+      <p class="text-xs font-medium text-rose-200/80">
+        L'incontournable t-shirt « I love Grézieu-la-Varenne »
+      </p>
+    </div>
+
+    <!-- ZONE DU T-SHIRT 3D RETOURNABLE -->
+    <div class="my-5 flex flex-col items-center">
+      <div class="jersey-card-container relative h-76 w-68 sm:h-84 sm:w-76 cursor-pointer select-none"
+        (click)="flipJersey()" title="Cliquez pour retourner le t-shirt !">
+
+        <div class="jersey-card" [class.is-flipped]="jerseyFlipped()">
+
+          <!-- =================== RECTO (FACE AVANT) =================== -->
+          <div class="jersey-face flex flex-col items-center justify-center">
+            <svg viewBox="0 0 320 360" class="h-full w-full filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
+              <defs>
+                <linearGradient id="tshirtWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffffff" />
+                  <stop offset="60%" stop-color="#f8fafc" />
+                  <stop offset="100%" stop-color="#e2e8f0" />
+                </linearGradient>
+                <linearGradient id="heartRed" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#f43f5e" />
+                  <stop offset="100%" stop-color="#e11d48" />
+                </linearGradient>
+              </defs>
+
+              <!-- Forme du T-shirt (Manches + Corps épuré blanc premium) -->
+              <path d="M 60 50 L 8 115 L 45 145 L 80 100 L 80 320 L 240 320 L 240 100 L 275 145 L 312 115 L 260 50 Z"
+                fill="url(#tshirtWhite)" stroke="#cbd5e1" stroke-width="2" />
+
+              <!-- Col rond côtelé avec étiquette chic -->
+              <path d="M 120 50 Q 160 85 200 50 Q 160 65 120 50 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5" />
+              <rect x="150" y="66" width="20" height="12" rx="2" fill="#f43f5e" />
+              <text x="160" y="75" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">PARIS</text>
+
+              <!-- Coutures discrètes épaules et manches -->
+              <path d="M 60 50 L 80 100" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,2" />
+              <path d="M 260 50 L 240 100" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,2" />
+              <line x1="8" y1="115" x2="45" y2="145" stroke="#cbd5e1" stroke-width="1.5" />
+              <line x1="312" y1="115" x2="275" y2="145" stroke="#cbd5e1" stroke-width="1.5" />
+
+              <!-- FLOCAGE CENTRAL : I GRÉZIEU-LA-VARENNE -->
+              <g transform="translate(160, 185)">
+                <!-- Grand Cœur Rouge battant -->
+                <g transform="translate(0, -38)">
+                  <path d="M 0 0 C -22 -26 -50 4 0 46 C 50 4 22 -26 0 0 Z" fill="url(#heartRed)"
+                    filter="drop-shadow(0 4px 8px rgba(244,63,94,0.4))" />
+                </g>
+
+                <!-- Texte 'I love' -->
+                <text x="0" y="-48" font-size="22" font-weight="900" fill="#0f172a" text-anchor="middle"
+                  font-family="'Impact', 'Arial Black', sans-serif" letter-spacing="1">
+                  I LOVE
+                </text>
+
+                <!-- Texte 'Grézieu-la-Varenne' stylisé -->
+                <text x="0" y="32" font-size="16" font-weight="900" fill="#0f172a" text-anchor="middle"
+                  font-family="'Impact', 'Arial Black', sans-serif" letter-spacing="0.5">
+                  GRÉZIEU
+                </text>
+                <text x="0" y="52" font-size="13" font-weight="800" fill="#e11d48" text-anchor="middle"
+                  font-family="'Impact', 'Arial Black', sans-serif" letter-spacing="1.5">
+                  LA-VARENNE
+                </text>
+
+                <rect x="-35" y="65" width="70" height="15" rx="7.5" fill="#0f172a" />
+                <text x="0" y="76" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle"
+                  font-family="sans-serif" letter-spacing="1">
+                  69290
+                </text>
+              </g>
+
+              <!-- Étiquette d'authenticité bas gauche -->
+              <rect x="90" y="295" width="36" height="16" rx="3" fill="#0f172a" />
+              <text x="108" y="306" font-size="6.5" font-weight="900" fill="#f43f5e"
+                text-anchor="middle">OFFICIAL</text>
+            </svg>
+          </div>
+
+          <!-- =================== VERSO (FACE ARRIÈRE) =================== -->
+          <div class="jersey-face jersey-face-back flex flex-col items-center justify-center">
+            <svg viewBox="0 0 320 360" class="h-full w-full filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
+              <!-- Corps blanc du t-shirt dos -->
+              <path d="M 60 50 L 8 115 L 45 145 L 80 100 L 80 320 L 240 320 L 240 100 L 275 145 L 312 115 L 260 50 Z"
+                fill="url(#tshirtWhite)" stroke="#cbd5e1" stroke-width="2" />
+
+              <!-- Col dos -->
+              <path d="M 120 50 Q 160 60 200 50 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5" />
+
+              <!-- Petit cœur rouge nuque -->
+              <g transform="translate(160, 68) scale(0.35)">
+                <path d="M 0 0 C -22 -26 -50 4 0 46 C 50 4 22 -26 0 0 Z" fill="#e11d48" />
+              </g>
+
+              <!-- FLOCAGE DOS : MARIE ou FAN N°1 -->
+              <text x="160" y="125" font-size="24" font-weight="900" fill="#0f172a" text-anchor="middle"
+                font-family="'Impact', sans-serif" letter-spacing="3">
+                LA VARENNE
+              </text>
+
+              <!-- NUMÉRO MYTHIQUE : 69 ou 1 -->
+              <text x="160" y="225" font-size="95" font-weight="900" fill="#f43f5e" text-anchor="middle"
+                font-family="'Impact', sans-serif" stroke="#0f172a" stroke-width="3">
+                69
+              </text>
+
+              <!-- VILLE & CODE POSTAL -->
+              <text x="160" y="268" font-size="13" font-weight="800" fill="#0f172a" text-anchor="middle"
+                font-family="sans-serif" letter-spacing="2">
+                GRÉZIEU-LA-VARENNE
+              </text>
+
+              <text x="160" y="290" font-size="9" font-weight="700" fill="#64748b" text-anchor="middle"
+                font-family="sans-serif">
+                ÉDITION SPÉCIALE • PARIS 2026
+              </text>
+            </svg>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Bouton de rotation du t-shirt -->
+      <button type="button" (click)="flipJersey()"
+        class="mt-2 inline-flex items-center gap-2 rounded-full border border-rose-400/30 bg-rose-500/20 px-4 py-2 text-xs font-bold text-rose-300 transition-all hover:bg-rose-500/30 active:scale-95">
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+          <path d="M3 3v5h5" />
+          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+          <path d="M16 21h5v-5" />
+        </svg>
+        <span>{{ jerseyFlipped() ? 'Voir le devant (I love Grézieu)' : 'Voir le dos (Flocage 69)' }}</span>
+      </button>
+    </div>
+
+    <!-- Fiche technique humoristique -->
+    <div class="grid grid-cols-2 gap-2 text-center text-xs">
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-2.5">
+        <span class="text-slate-400">Origine certifiée</span>
+        <p class="mt-0.5 font-bold text-rose-400">100% Grézieu 🇫🇷</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-2.5">
+        <span class="text-slate-400">Supportrice</span>
+        <p class="mt-0.5 font-bold text-amber-300">N°1 Officielle 👑</p>
+      </div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="mt-4 space-y-2">
+      <button type="button" (click)="triggerGrizouAction('cheer')"
+        class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-rose-600 via-pink-600 to-rose-500 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-rose-600/30 transition-all hover:brightness-110 active:scale-95">
+        <span>Déclarer sa flamme à Grézieu ! ✨</span>
+      </button>
+
+      <button type="button" (click)="triggerGrizouAction('order')"
+        class="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-slate-200 transition-all hover:bg-white/20 active:scale-95">
+        <span>Commander le t-shirt (0,00 €) 🛍️</span>
+      </button>
+    </div>
+
+    <!-- Message après action -->
+    @if (grizouAction(); as act) {
+    <div
+      class="mt-4 animate-fade-in rounded-2xl border border-rose-400/40 bg-rose-900/60 p-3 text-center text-xs font-bold text-rose-200">
+      @if (act === 'cheer') {
+      🎉 VIVE GRÉZIEU-LA-VARENNE ! Tu portes le t-shirt à la perfection ! ✨
+      } @else {
+      ✅ T-shirt « I love Grézieu-la-Varenne » validé pour Marie ! Livraison directe
+      }
+    </div>
+    }
+  </div>
+  }
+
+  <!-- ============================================================ -->
+  <!-- 3. MODAL HUB : TOUS LES SECRETS DE PARIS ✨                   -->
+  <!-- ============================================================ -->
+  @if (activeEgg() === 'hub') {
+  <div
+    class="relative w-full max-w-md overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-6 sm:p-7 shadow-2xl backdrop-blur-2xl transition-all"
+    (click)="$event.stopPropagation()">
+
+    <!-- Bouton fermer -->
+    <button type="button" (click)="closeModal()"
+      class="absolute right-5 top-5 grid size-9 place-items-center rounded-full bg-slate-100 text-slate-600 transition-transform active:scale-90 hover:bg-slate-200"
+      aria-label="Fermer">
+      <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M18 6L6 18M6 6l12 12" />
+      </svg>
+    </button>
+
+    <div class="flex items-center gap-2.5">
+      <span class="grid size-10 place-items-center rounded-2xl bg-slate-900 text-lg text-white shadow-md">✨</span>
+      <div>
+        <h2 class="text-xl font-bold tracking-tight text-slate-900">Secrets & Surprises</h2>
+        <p class="text-xs font-medium text-slate-500">2 petits mystères dissimulés pour toi</p>
+      </div>
+    </div>
+
+    <div class="mt-6 space-y-3.5">
+      <!-- Carte Secret 1 : Empanadas -->
+      <div (click)="selectFromHub('empanadas')"
+        class="group relative flex cursor-pointer items-center gap-4 rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50/40 p-4 transition-all hover:border-amber-300 hover:shadow-md active:scale-[0.98]">
+        <div
+          class="grid size-13 place-items-center rounded-2xl bg-amber-400/20 text-3xl shadow-inner group-hover:scale-110 transition-transform">
+          🥟
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-bold text-slate-900">L'Invitation Gourmande</h3>
+            @if (secretsUnlocked().empanadas) {
+            <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Vu ✨</span>
+            }
+          </div>
+          <p class="mt-0.5 text-xs text-slate-600 line-clamp-1">
+            Une proposition cachée au cœur de Paris...
+          </p>
+        </div>
+        <span
+          class="grid size-8 place-items-center rounded-xl bg-white text-slate-700 shadow-sm transition-transform group-hover:translate-x-1">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </span>
+      </div>
+
+      <!-- Carte Secret 2 : T-shirt Grézieu-la-Varenne -->
+      <div (click)="selectFromHub('grizou')"
+        class="group relative flex cursor-pointer items-center gap-4 rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50 to-pink-50/40 p-4 transition-all hover:border-rose-300 hover:shadow-md active:scale-[0.98]">
+        <div
+          class="grid size-13 place-items-center rounded-2xl bg-rose-500/20 text-3xl shadow-inner group-hover:scale-110 transition-transform">
+          👕
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-bold text-slate-900">T-Shirt Grézieu-la-Varenne</h3>
+            @if (secretsUnlocked().grizou) {
+            <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Vu ✨</span>
+            }
+          </div>
+          <p class="mt-0.5 text-xs text-slate-600 line-clamp-1">
+            Le fameux t-shirt « I love Grézieu-la-Varenne »...
+          </p>
+        </div>
+        <span
+          class="grid size-8 place-items-center rounded-xl bg-white text-slate-700 shadow-sm transition-transform group-hover:translate-x-1">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <p class="mt-6 text-center text-xs text-slate-400">
+      💡 Astuce : tu peux aussi les repérer directement sur la carte de Paris !
+    </p>
+  </div>
+  }
+
+</div>
+}

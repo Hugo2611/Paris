@@ -8,10 +8,11 @@ import { Souvenir } from '../../data/souvenirs.data';
 import { MemorySavePayload, SouvenirsService } from '../../data/souvenirs.service';
 import { MemoryDetail } from '../memory-detail/memory-detail';
 import { MemoryForm } from '../memory-form/memory-form';
+import { EasterEggs, EasterEggType } from '../easter-eggs/easter-eggs';
 
 @Component({
   selector: 'app-map',
-  imports: [MemoryDetail, MemoryForm, RouterLink],
+  imports: [MemoryDetail, MemoryForm, RouterLink, EasterEggs],
   templateUrl: './map.html',
   styleUrl: './map.css',
 })
@@ -24,10 +25,16 @@ export class Map implements AfterViewInit, OnDestroy {
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly pickingLocation = signal(false);
+  readonly activeEasterEgg = signal<EasterEggType>(null);
+
+  readonly EMPANADAS_COORDS: [number, number] = [48.8584, 2.3615];
+  readonly GREZIEU_COORDS: [number, number] = [48.8350, 2.4180];
+
   private draft?: Souvenir;
   readonly isAdmin = computed(() => this.auth.isAdmin());
   private map?: L.Map;
   private markers = L.layerGroup();
+  private easterEggMarkers = L.layerGroup();
   private breakpointSubscription?: Subscription;
 
   private lastSelectTime = 0;
@@ -54,6 +61,8 @@ export class Map implements AfterViewInit, OnDestroy {
     }).addTo(this.map);
 
     this.markers.addTo(this.map);
+    this.easterEggMarkers.addTo(this.map);
+    this.drawEasterEggMarkers();
 
     // Détection clic sur carte pour choix de position
     this.map.on('click', (event: L.LeafletMouseEvent) => 
@@ -222,5 +231,75 @@ export class Map implements AfterViewInit, OnDestroy {
       iconSize: [48, 48],
       iconAnchor: [24, 46]
     });
+  }
+
+  openEasterEgg(type: EasterEggType): void {
+    this.closeDetail();
+    this.menuOpen.set(false);
+    this.activeEasterEgg.set(type);
+  }
+
+  navigateToEasterEgg(type: 'empanadas' | 'grizou'): void {
+    const coords = type === 'empanadas' ? this.EMPANADAS_COORDS : this.GREZIEU_COORDS;
+    if (this.map) {
+      this.map.flyTo(coords, 15, { animate: true, duration: 0.8 });
+    }
+    this.activeEasterEgg.set(type);
+  }
+
+  private drawEasterEggMarkers(): void {
+    this.easterEggMarkers.clearLayers();
+
+    // 1. Marqueur Empanadas 🥟 (Rue de Turenne, Le Marais)
+    const empanadaIcon = L.divIcon({
+      className: 'bg-transparent border-none',
+      html: `
+        <div class="easter-egg-marker" title="Chut... un secret gourmand 🥟">
+          <div class="easter-egg-pulse-gold"></div>
+          <div class="easter-egg-badge gold">
+            <span class="text-2xl select-none filter drop-shadow">🥟</span>
+          </div>
+        </div>
+      `,
+      iconSize: [44, 44],
+      iconAnchor: [22, 22]
+    });
+
+    const empanadaMarker = L.marker(this.EMPANADAS_COORDS, { icon: empanadaIcon });
+    empanadaMarker.on('touchstart', (e: L.LeafletEvent) => {
+      L.DomEvent.stopPropagation(e);
+      this.ngZone.run(() => this.openEasterEgg('empanadas'));
+    });
+    empanadaMarker.on('click', (e: L.LeafletEvent) => {
+      L.DomEvent.stopPropagation(e);
+      this.ngZone.run(() => this.openEasterEgg('empanadas'));
+    });
+    empanadaMarker.addTo(this.easterEggMarkers);
+
+    // 2. Marqueur T-Shirt Grézieu-la-Varenne 👕
+    const grezieuIcon = L.divIcon({
+      className: 'bg-transparent border-none',
+      html: `
+        <div class="easter-egg-marker" title="Ambassade de Grézieu-la-Varenne 👕">
+          <div class="easter-egg-pulse-blue"></div>
+          <div class="easter-egg-badge blue">
+            <span class="text-2xl select-none filter drop-shadow">👕</span>
+          </div>
+        </div>
+      `,
+      iconSize: [44, 44],
+      iconAnchor: [22, 22]
+    });
+
+    const grezieuMarker = L.marker(this.GREZIEU_COORDS, { icon: grezieuIcon });
+    grezieuMarker.on('touchstart', (e: L.LeafletEvent) => {
+      L.DomEvent.stopPropagation(e);
+      this.ngZone.run(() => this.openEasterEgg('grizou'));
+    });
+    grezieuMarker.on('click', (e: L.LeafletEvent) => {
+      L.DomEvent.stopPropagation(e);
+      this.ngZone.run(() => this.openEasterEgg('grizou'));
+    });
+    grezieuMarker.addTo(this.easterEggMarkers);
   }
 }

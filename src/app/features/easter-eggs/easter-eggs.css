@@ -1,0 +1,91 @@
+/* Conteneur de perspective 3D pour le maillot */
+.jersey-card-container {
+  perspective: 1000px;
+}
+
+.jersey-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-style: preserve-3d;
+}
+
+.jersey-card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.jersey-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.jersey-face-back {
+  transform: rotateY(180deg);
+}
+
+/* Animations d'apparition et pulsation */
+@keyframes empanada-bounce {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) rotate(4deg) scale(1.05);
+  }
+}
+
+.animate-empanada {
+  animation: empanada-bounce 2.5s ease-in-out infinite;
+}
+
+@keyframes steam-float {
+  0% {
+    opacity: 0.2;
+    transform: translateY(0) scale(0.9);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-6px) scale(1.1);
+  }
+  100% {
+    opacity: 0.2;
+    transform: translateY(-12px) scale(0.9);
+  }
+}
+
+.animate-steam-1 {
+  animation: steam-float 2s ease-in-out infinite;
+}
+
+.animate-steam-2 {
+  animation: steam-float 2.4s ease-in-out 0.4s infinite;
+}
+
+.animate-steam-3 {
+  animation: steam-float 2.2s ease-in-out 0.8s infinite;
+}
+
+/* Effet brillance dorée sur le badge */
+@keyframes shimmer-gold {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-gold {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 215, 0, 0) 0%,
+    rgba(255, 215, 0, 0.3) 50%,
+    rgba(255, 215, 0, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-gold 3s infinite;
+}
