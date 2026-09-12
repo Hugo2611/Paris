@@ -23,8 +23,8 @@ Connectez le smartphone au même réseau Wi-Fi que l’ordinateur, lancez `npm s
 
 | Compte | Identifiant | Mot de passe | Droits |
 | --- | --- | --- | --- |
-| **Administrateur** | Compte Auth de Hugo | Mot de passe Supabase | Ajouter, modifier et supprimer des souvenirs & photos |
-| **Lectrice** | Compte Auth de Marie | Mot de passe Supabase | Consultation de la carte et de la galerie |
+| **Administrateur** | Compte Auth  | Mot de passe Supabase | Ajouter, modifier et supprimer des souvenirs & photos |
+| **Lectrice** | Compte Auth | Mot de passe Supabase | Consultation de la carte et de la galerie |
 
 > 🔒 **Sécurité Supabase** : Les autorisations sont vérifiées côté serveur via Row Level Security (RLS) et la fonction `public.is_admin()`. Hugo doit avoir `app_metadata.role = "admin"`. N’ajoutez jamais de clé `service_role` dans le frontend.
 
